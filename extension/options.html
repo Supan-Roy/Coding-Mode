@@ -12,24 +12,44 @@
     }
 
     :root {
+      color-scheme: light dark;
+      
+      /* Light theme defaults */
       --primary: #22c55e;
       --primary-dark: #16a34a;
-      --bg-main: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-tertiary: #334155;
-      --text-primary: #f1f5f9;
-      --text-secondary: #cbd5e1;
-      --text-muted: #94a3b8;
-      --border: rgba(148, 163, 184, 0.2);
-      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --success: #34d399;
-      --error: #ff6b6b;
+      --primary-light: rgba(34, 197, 94, 0.1);
+      --bg-main: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #f1f5f9;
+      --text-primary: #1a1a1a;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --border: rgba(30, 41, 59, 0.2);
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --success: #22c55e;
+      --error: #ef4444;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-main: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: rgba(148, 163, 184, 0.2);
+        --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --success: #34d399;
+        --error: #ff6b6b;
+      }
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg-main) 0%, #1a1f35 100%);
+      background: var(--bg-main);
       color: var(--text-primary);
       padding: 32px;
     }
@@ -47,10 +67,7 @@
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text-primary);
     }
 
     .subtitle {
@@ -60,13 +77,12 @@
     }
 
     .card {
-      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(30, 41, 59, 0.8) 100%);
+      background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 20px;
       box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
     }
 
@@ -112,7 +128,7 @@
       padding: 12px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(51, 65, 85, 0.2) 0%, rgba(30, 41, 59, 0.2) 100%);
+      background: var(--bg-tertiary);
       color: var(--text-primary);
       font-family: "Fira Code", "Consolas", monospace;
       font-size: 13px;
@@ -123,8 +139,8 @@
     textarea:focus {
       outline: none;
       border-color: var(--primary);
-      background: linear-gradient(135deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.3) 100%);
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 0 3px var(--primary-light);
     }
 
     .button-group {
@@ -154,18 +170,18 @@
 
     button.primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+      box-shadow: 0 10px 20px -5px var(--primary-light);
     }
 
     button.secondary {
-      background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(51, 65, 85, 0.8) 100%);
+      background: var(--bg-tertiary);
       color: var(--text-secondary);
       border: 1px solid var(--border);
     }
 
     button.secondary:hover {
-      background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(51, 65, 85, 0.7) 100%);
-      border-color: rgba(148, 163, 184, 0.4);
+      background: var(--bg-secondary);
+      border-color: var(--border);
       transform: translateY(-2px);
     }
 
@@ -194,7 +210,7 @@
       align-items: center;
       gap: 10px;
       padding: 10px 12px;
-      background: linear-gradient(135deg, rgba(51, 65, 85, 0.2) 0%, rgba(30, 41, 59, 0.2) 100%);
+      background: var(--bg-tertiary);
       border-radius: 8px;
       border: 1px solid var(--border);
       margin-bottom: 12px;

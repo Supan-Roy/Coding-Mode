@@ -28,6 +28,18 @@ const refreshState = async () => {
   statusDot.classList.toggle("active", active);
   statusText.textContent = active ? "Status: Active" : "Status: Inactive";
   countdown.textContent = active ? `Remaining: ${formatRemaining(remainingMs)}` : "No active session";
+  document.querySelector(".status-section").classList.toggle("active", active);
+};
+
+const addTime = async () => {
+  setError("");
+  try {
+    const { ok, error } = await chrome.runtime.sendMessage({ type: "extendSession", additionalMinutes: 5 });
+    if (!ok) throw new Error(error || "Could not extend session");
+    await refreshState();
+  } catch (err) {
+    setError(err.message);
+  }
 };
 
 const loadAuthState = async () => {
@@ -96,6 +108,7 @@ const init = async () => {
   bindDurations();
   bindCustom();
   document.getElementById("end-session").addEventListener("click", endSession);
+  document.getElementById("add-time").addEventListener("click", addTime);
   document.getElementById("open-options").addEventListener("click", () => {
     chrome.runtime.openOptionsPage();
   });

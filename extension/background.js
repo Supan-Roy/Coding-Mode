@@ -7,8 +7,29 @@ const STORAGE_KEYS = {
   sessionEnd: "sessionEnd",
   authEnabled: "authEnabled",
   totpSecret: "totpSecret",
-  blockedDomains: "blockedDomains"
+  blockedDomains: "blockedDomains",
+  autoTriggerEnabled: "autoTriggerEnabled"
 };
+
+const PROGRAMMING_SITES = [
+  "leetcode.com",
+  "www.leetcode.com",
+  "codeforces.com",
+  "www.codeforces.com",
+  "codechef.com",
+  "www.codechef.com",
+  "hackerrank.com",
+  "www.hackerrank.com",
+  "atcoder.jp",
+  "topcoder.com",
+  "www.topcoder.com",
+  "geeksforgeeks.org",
+  "www.geeksforgeeks.org",
+  "codingame.com",
+  "www.codingame.com",
+  "exercism.org",
+  "www.exercism.org"
+];
 
 const loadDefaultDomains = async () => {
   try {
@@ -33,6 +54,9 @@ const ensureDefaults = async () => {
   }
   if (typeof existing[STORAGE_KEYS.authEnabled] !== "boolean") {
     updates[STORAGE_KEYS.authEnabled] = false;
+  }
+  if (typeof existing[STORAGE_KEYS.autoTriggerEnabled] !== "boolean") {
+    updates[STORAGE_KEYS.autoTriggerEnabled] = true;
   }
   if (existing[STORAGE_KEYS.totpSecret] == null) {
     updates[STORAGE_KEYS.totpSecret] = null;
@@ -121,6 +145,21 @@ const endSession = async () => {
   await scheduleAlarm(null);
 };
 
+const extendSession = async (additionalMinutes) => {
+  const minutes = Number(additionalMinutes);
+  if (!minutes || minutes <= 0) {
+    throw new Error("Additional minutes must be greater than 0");
+  }
+  const state = await getState();
+  if (!state.active) {
+    throw new Error("No active session to extend");
+  }
+  const newSessionEnd = state.sessionEnd + minutes * 60 * 1000;
+  await chrome.storage.local.set({ [STORAGE_KEYS.sessionEnd]: newSessionEnd });
+  await scheduleAlarm(newSessionEnd);
+  return { sessionEnd: newSessionEnd };
+};
+
 const handleEarlyEnd = async (code) => {
   const state = await getState();
   if (!state.active) return { ended: true };
@@ -202,6 +241,28 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
+chrome.webNavigation.onCommitted.addListener(async (details) => {
+  if (details.frameId !== 0) return;
+  
+  const { autoTriggerEnabled } = await chrome.storage.local.get([STORAGE_KEYS.autoTriggerEnabled]);
+  if (!autoTriggerEnabled) return;
+  
+  const state = await getState();
+  if (state.active) return;
+  
+  try {
+    const url = new URL(details.url);
+    const hostname = url.hostname;
+    
+    if (PROGRAMMING_SITES.includes(hostname)) {
+      await startSession(30);
+      console.log(`Coding Mode: Auto-triggered 30-min session for ${hostname}`);
+    }
+  } catch (err) {
+    console.error("Coding Mode: Auto-trigger error", err);
+  }
+});
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   const respond = (payload) => sendResponse({ ok: true, ...payload });
   const respondError = (error) => sendResponse({ ok: false, error: error?.message || error });
@@ -215,6 +276,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       case "startSession": {
         const { durationMinutes } = message;
         const result = await startSession(durationMinutes);
+        return respond(result);
+      }
+      case "extendSession": {
+        const { additionalMinutes } = message;
+        const result = await extendSession(additionalMinutes);
         return respond(result);
       }
       case "endSession": {

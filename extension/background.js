@@ -209,7 +209,8 @@ const toggleAuth = async (enabled) => {
   }
   await chrome.storage.local.set(updates);
   const secret = updates[STORAGE_KEYS.totpSecret] || (await getState()).totpSecret;
-  return { authEnabled: updates[STORAGE_KEYS.authEnabled], secret };
+  const uri = buildOtpauthUri(secret);
+  return { authEnabled: updates[STORAGE_KEYS.authEnabled], secret, uri };
 };
 
 chrome.runtime.onInstalled.addListener(async () => {

@@ -70,7 +70,7 @@ const handleToggle = async () => {
   setError("");
   setAuthFeedback("");
   const enabled = authToggle.checked;
-  const { ok, error, secret } = await chrome.runtime.sendMessage({ type: "toggleAuth", enabled });
+  const { ok, error, secret, uri } = await chrome.runtime.sendMessage({ type: "toggleAuth", enabled });
   if (!ok) {
     authToggle.checked = !enabled;
     setError(error || "Could not update authenticator state");

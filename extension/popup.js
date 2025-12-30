@@ -4,6 +4,7 @@ const countdown = document.getElementById("countdown");
 const errorEl = document.getElementById("error");
 const totpInput = document.getElementById("totp-code");
 const customMinutesInput = document.getElementById("custom-minutes");
+const endButton = document.getElementById("end-session");
 
 const setError = (message = "") => {
   errorEl.textContent = message;
@@ -29,6 +30,7 @@ const refreshState = async () => {
   statusText.textContent = active ? "Status: Active" : "Status: Inactive";
   countdown.textContent = active ? `Remaining: ${formatRemaining(remainingMs)}` : "No active session";
   document.querySelector(".status-section").classList.toggle("active", active);
+  endButton.classList.toggle("danger", active);
 };
 
 const addTime = async () => {
@@ -107,7 +109,7 @@ const bindCustom = () => {
 const init = async () => {
   bindDurations();
   bindCustom();
-  document.getElementById("end-session").addEventListener("click", endSession);
+  endButton.addEventListener("click", endSession);
   document.getElementById("add-time").addEventListener("click", addTime);
   document.getElementById("open-options").addEventListener("click", () => {
     chrome.runtime.openOptionsPage();

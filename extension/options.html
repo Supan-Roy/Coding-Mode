@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding Mode – Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #22c55e;
+      --primary-dark: #16a34a;
+      --bg-main: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.2);
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --success: #34d399;
+      --error: #ff6b6b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg-main) 0%, #1a1f35 100%);
+      color: var(--text-primary);
+      padding: 32px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(30, 41, 59, 0.8) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(148, 163, 184, 0.4);
+      box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(51, 65, 85, 0.2) 0%, rgba(30, 41, 59, 0.2) 100%);
+      color: var(--text-primary);
+      font-family: "Fira Code", "Consolas", monospace;
+      font-size: 13px;
+      resize: vertical;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.3) 100%);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #0a0f1a;
+    }
+
+    button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(51, 65, 85, 0.8) 100%);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(51, 65, 85, 0.7) 100%);
+      border-color: rgba(148, 163, 184, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .qr-block {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    #qr-canvas {
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .qr-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .secret-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: linear-gradient(135deg, rgba(51, 65, 85, 0.2) 0%, rgba(30, 41, 59, 0.2) 100%);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      word-break: break-all;
+      font-family: "Fira Code", "Consolas", monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .feedback {
+      font-size: 12px;
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      min-height: 0;
+      display: none;
+    }
+
+    .feedback:not(:empty) {
+      display: block;
+    }
+
+    .feedback.success {
+      color: var(--success);
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .feedback.error {
+      color: var(--error);
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+
+    #error {
+      color: var(--error);
+      font-size: 12px;
+      padding: 10px 12px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 107, 107, 0.2);
+      margin-bottom: 20px;
+      min-height: 0;
+      display: none;
+    }
+
+    #error:not(:empty) {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Settings</h1>
+      <p class="subtitle">Configure your Coding Mode experience</p>
+    </div>
+
+    <div id="error"></div>
+
+    <div class="card">
+      <h2>🔐 Authentication</h2>
+      <p class="section-desc">Protect early session termination with a 6-digit code from your authenticator app.</p>
+
+      <label>
+        <input id="auth-toggle" type="checkbox" />
+        Require authentication to unlock
+      </label>
+
+      <div class="qr-block">
+        <canvas id="qr-canvas" width="160" height="160"></canvas>
+        <div class="qr-info">
+          <div class="secret-display">
+            Secret: <span id="secret-value">—</span>
+          </div>
+          <div class="button-group">
+            <button id="copy-uri" class="secondary">📋 Copy URI</button>
+            <button id="reset-auth" class="secondary">🔄 Reset</button>
+          </div>
+          <div id="auth-feedback" class="feedback success"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🚫 Blocked Domains</h2>
+      <p class="section-desc">List the AI chat sites you want to block. One per line.</p>
+      <textarea id="domains" placeholder="chat.openai.com&#10;chatgpt.com&#10;gemini.google.com&#10;claude.ai&#10;..."></textarea>
+      <div class="button-group">
+        <button id="save-domains" class="primary">Save Changes</button>
+        <div id="domain-feedback" class="feedback success"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="utils/qr-lib.js"></script>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -55,8 +55,8 @@ const ensureDefaults = async () => {
   if (typeof existing[STORAGE_KEYS.authEnabled] !== "boolean") {
     updates[STORAGE_KEYS.authEnabled] = false;
   }
-  if (typeof existing[STORAGE_KEYS.autoTriggerEnabled] !== "boolean") {
-    updates[STORAGE_KEYS.autoTriggerEnabled] = true;
+  if (!Object.prototype.hasOwnProperty.call(existing, STORAGE_KEYS.autoTriggerEnabled)) {
+    updates[STORAGE_KEYS.autoTriggerEnabled] = false;
   }
   if (existing[STORAGE_KEYS.totpSecret] == null) {
     updates[STORAGE_KEYS.totpSecret] = null;
@@ -210,6 +210,18 @@ const handleEarlyEnd = async (code) => {
     }
   }
 
+  // Set autoTriggerCooldown to the current hostname if on a programming site
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab && tab.url) {
+      const url = new URL(tab.url);
+      const hostname = url.hostname;
+      if (PROGRAMMING_SITES.includes(hostname)) {
+        await chrome.storage.local.set({ autoTriggerCooldown: hostname });
+      }
+    }
+  } catch {}
+
   await endSession();
   return { ended: true };
 };
@@ -280,20 +292,26 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 chrome.webNavigation.onCommitted.addListener(async (details) => {
   if (details.frameId !== 0) return;
-  
-  const { autoTriggerEnabled } = await chrome.storage.local.get([STORAGE_KEYS.autoTriggerEnabled]);
+
+  const { autoTriggerEnabled, autoTriggerCooldown } = await chrome.storage.local.get([STORAGE_KEYS.autoTriggerEnabled, "autoTriggerCooldown"]);
   if (!autoTriggerEnabled) return;
-  
+
   const state = await getState();
   if (state.active) return;
-  
+
   try {
     const url = new URL(details.url);
     const hostname = url.hostname;
-    
+
+    // If user ended session on this site, don't auto-trigger until they leave
+    if (autoTriggerCooldown === hostname) return;
+
     if (PROGRAMMING_SITES.includes(hostname)) {
       await startSession(30);
       console.log(`Coding Mode: Auto-triggered 30-min session for ${hostname}`);
+    } else if (autoTriggerCooldown) {
+      // If user navigates away from the site, clear the cooldown
+      await chrome.storage.local.remove("autoTriggerCooldown");
     }
   } catch (err) {
     console.error("Coding Mode: Auto-trigger error", err);

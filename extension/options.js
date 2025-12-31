@@ -59,13 +59,20 @@ const loadState = async () => {
     }
   }
 
-  const { ok: okState, blockedDomains: domains, autoTriggerEnabled, error: stateError } = await chrome.runtime.sendMessage({ type: "getState" });
+  const { ok: okState, blockedDomains: domains, error: stateError } = await chrome.runtime.sendMessage({ type: "getState" });
+  let autoTriggerEnabled = true;
+  try {
+    const stored = await chrome.storage.local.get("autoTriggerEnabled");
+    if (typeof stored.autoTriggerEnabled === "boolean") {
+      autoTriggerEnabled = stored.autoTriggerEnabled;
+    }
+  } catch {}
   if (!okState) {
     setError(stateError || "Unable to load domains");
   } else {
     populateDomains(domains);
-    if (typeof autoTriggerEnabled === "boolean" && autoTriggerToggle) {
-      autoTriggerToggle.checked = autoTriggerEnabled;
+    if (autoTriggerToggle) {
+      autoTriggerToggle.checked = !!autoTriggerEnabled;
     }
   }
 };
@@ -73,6 +80,8 @@ const handleAutoTriggerToggle = async () => {
   if (!autoTriggerToggle) return;
   const enabled = autoTriggerToggle.checked;
   await chrome.storage.local.set({ autoTriggerEnabled: enabled });
+  // Force reload to ensure UI stays in sync
+  await loadState();
 };
 
 const handleToggle = async () => {

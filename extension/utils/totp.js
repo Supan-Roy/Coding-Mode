@@ -94,7 +94,7 @@ export const verifyTotp = async (secretBase32, code, { stepSeconds = DEFAULT_STE
   return results.includes(trimmed);
 };
 
-export const buildOtpauthUri = (secretBase32, label = "Coding Mode", issuer = "Coding Mode") => {
+export const buildOtpauthUri = (secretBase32, label = "Coding Mode: Authentication Code", issuer = "Coding Mode") => {
   const encodedLabel = encodeURIComponent(label);
   const encodedIssuer = encodeURIComponent(issuer);
   const normalizedSecret = normalizeSecret(secretBase32);

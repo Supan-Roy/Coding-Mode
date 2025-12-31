@@ -30,7 +30,9 @@ const refreshState = async () => {
   statusText.textContent = active ? "Status: Active" : "Status: Inactive";
   countdown.textContent = active ? `Remaining: ${formatRemaining(remainingMs)}` : "No active session";
   document.querySelector(".status-section").classList.toggle("active", active);
-  endButton.classList.toggle("danger", active);
+  // Always use .danger class for End button for consistent red style
+  endButton.classList.add('danger'); // Ensure .danger class is always present
+  endButton.disabled = !active;
 };
 
 const addTime = async () => {
@@ -95,6 +97,11 @@ const endSession = async () => {
       setError("");
       const code = totpInput.value.trim();
       try {
+        // Check if auth is enabled and code is empty
+        const state = await chrome.runtime.sendMessage({ type: "getState" });
+        if (state.ok && state.authEnabled && !code) {
+          throw new Error("Enter code from your authenticator app");
+        }
         const { ok, error, ended } = await chrome.runtime.sendMessage({ type: "endSession", code });
         if (!ok) throw new Error(error || "Could not end session");
         if (!ended) throw new Error(error || "Code required");

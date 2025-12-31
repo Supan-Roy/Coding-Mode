@@ -1,6 +1,7 @@
 import { renderQrToCanvas } from "./utils/qr.js";
 
 const authToggle = document.getElementById("auth-toggle");
+const autoTriggerToggle = document.getElementById("auto-trigger-toggle");
 const qrCanvas = document.getElementById("qr-canvas");
 const secretValue = document.getElementById("secret-value");
 const resetAuthBtn = document.getElementById("reset-auth");
@@ -49,7 +50,7 @@ const loadState = async () => {
   }
   authToggle.checked = !!authEnabled;
   secretValue.textContent = secret ? secret.slice(0, 20) + "..." : "—";
-  
+
   if (secret && uri) {
     try {
       renderQrToCanvas(qrCanvas, uri, 160);
@@ -57,13 +58,21 @@ const loadState = async () => {
       console.error("Failed to render QR:", err);
     }
   }
-  
-  const { ok: okState, blockedDomains: domains, error: stateError } = await chrome.runtime.sendMessage({ type: "getState" });
+
+  const { ok: okState, blockedDomains: domains, autoTriggerEnabled, error: stateError } = await chrome.runtime.sendMessage({ type: "getState" });
   if (!okState) {
     setError(stateError || "Unable to load domains");
   } else {
     populateDomains(domains);
+    if (typeof autoTriggerEnabled === "boolean" && autoTriggerToggle) {
+      autoTriggerToggle.checked = autoTriggerEnabled;
+    }
   }
+};
+const handleAutoTriggerToggle = async () => {
+  if (!autoTriggerToggle) return;
+  const enabled = autoTriggerToggle.checked;
+  await chrome.storage.local.set({ autoTriggerEnabled: enabled });
 };
 
 const handleToggle = async () => {
@@ -130,6 +139,9 @@ const init = async () => {
   resetAuthBtn.addEventListener("click", handleReset);
   copyUriBtn.addEventListener("click", handleCopyUri);
   saveDomainsBtn.addEventListener("click", handleSaveDomains);
+  if (autoTriggerToggle) {
+    autoTriggerToggle.addEventListener("change", handleAutoTriggerToggle);
+  }
   await loadState();
 };
 

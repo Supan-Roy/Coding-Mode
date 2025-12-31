@@ -36,15 +36,15 @@
         --primary: #f1f5f9;
         --primary-dark: #e2e8f0;
         --primary-light: rgba(241, 245, 249, 0.15);
-        --bg-main: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
+        --bg-main: #0a0a0a;
+        --bg-secondary: #1a1a1a;
+        --bg-tertiary: #2a2a2a;
         --text-primary: #f1f5f9;
         --text-secondary: #cbd5e1;
         --text-muted: #94a3b8;
-        --border: rgba(148, 163, 184, 0.2);
-        --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-        --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --border: rgba(255, 255, 255, 0.1);
+        --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         --success: #34d399;
         --error: #ff6b6b;
       }
@@ -263,11 +263,51 @@
     #error:not(:empty) {
       display: block;
     }
+
+    .about-section {
+      margin-top: 20px;
+    }
+
+    .about-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .about-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .about-label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 120px;
+    }
+
+    .about-value {
+      color: var(--text-primary);
+    }
+
+    .about-link {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .about-link:hover {
+      text-decoration: underline;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
+
+    <div class="header" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 8px;">
+      <img src="icons/coding-mode-logo.svg" alt="Coding Mode Logo" style="width: 64px; height: 64px; margin-bottom: 4px;" />
       <h1>Settings</h1>
       <p class="subtitle">Configure your Coding Mode experience</p>
     </div>
@@ -298,6 +338,16 @@
       </div>
     </div>
 
+
+    <div class="card">
+      <h2>⚡ Auto-Trigger Coding Session</h2>
+      <p class="section-desc">Automatically start a coding session when you visit popular programming platforms (e.g., LeetCode, Codeforces, etc.).</p>
+      <label>
+        <input id="auto-trigger-toggle" type="checkbox" />
+        Enable auto-trigger on programming sites
+      </label>
+    </div>
+
     <div class="card">
       <h2>🚫 Blocked Domains</h2>
       <p class="section-desc">List the AI chat sites you want to block. One per line.</p>
@@ -305,6 +355,24 @@
       <div class="button-group">
         <button id="save-domains" class="primary">Save Changes</button>
         <div id="domain-feedback" class="feedback success"></div>
+      </div>
+    </div>
+
+    <div class="card about-section">
+      <h2>ℹ️ About</h2>
+      <div class="about-content">
+        <div class="about-item">
+          <span class="about-label">Developer:</span>
+          <a href="https://www.linkedin.com/in/supanroy" target="_blank" class="about-link">Supan Roy</a>
+        </div>
+        <div class="about-item">
+          <span class="about-label">Email:</span>
+          <a href="mailto:support@supanroy.com" class="about-link">support@supanroy.com</a>
+        </div>
+        <div class="about-item">
+          <span class="about-label">Report Issues:</span>
+          <a href="https://github.com/Supan-Roy/Coding-Mode/issues" target="_blank" class="about-link">Issue a Report</a>
+        </div>
       </div>
     </div>
   </div>

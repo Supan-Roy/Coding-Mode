@@ -72,17 +72,43 @@ const startSession = async (minutes) => {
 };
 
 const endSession = async () => {
-  setError("");
-  const code = totpInput.value.trim();
-  try {
-    const { ok, error, ended } = await chrome.runtime.sendMessage({ type: "endSession", code });
-    if (!ok) throw new Error(error || "Could not end session");
-    if (!ended) throw new Error(error || "Code required");
-    totpInput.value = "";
-    await refreshState();
-  } catch (err) {
-    setError(err.message);
-  }
+  const modal = document.getElementById("confirm-modal");
+  modal.classList.add("active");
+  
+  return new Promise((resolve) => {
+    const cancel = document.getElementById("modal-cancel");
+    const confirm = document.getElementById("modal-confirm");
+    
+    const cleanup = () => {
+      modal.classList.remove("active");
+      cancel.removeEventListener("click", onCancel);
+      confirm.removeEventListener("click", onConfirm);
+    };
+    
+    const onCancel = () => {
+      cleanup();
+      resolve();
+    };
+    
+    const onConfirm = async () => {
+      cleanup();
+      setError("");
+      const code = totpInput.value.trim();
+      try {
+        const { ok, error, ended } = await chrome.runtime.sendMessage({ type: "endSession", code });
+        if (!ok) throw new Error(error || "Could not end session");
+        if (!ended) throw new Error(error || "Code required");
+        totpInput.value = "";
+        await refreshState();
+      } catch (err) {
+        setError(err.message);
+      }
+      resolve();
+    };
+    
+    cancel.addEventListener("click", onCancel);
+    confirm.addEventListener("click", onConfirm);
+  });
 };
 
 const bindDurations = () => {
@@ -116,7 +142,7 @@ const init = async () => {
   });
 
   await refreshState();
-  setInterval(refreshState, 5000);
+  setInterval(refreshState, 1000);
 };
 
 init();

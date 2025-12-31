@@ -136,13 +136,49 @@ const startSession = async (durationMinutes) => {
   await chrome.storage.local.set({ [STORAGE_KEYS.sessionEnd]: sessionEnd });
   await applyRules(blockedDomains);
   await scheduleAlarm(sessionEnd);
+
+  // Reload all open tabs that match blocked domains
+  if (Array.isArray(blockedDomains) && blockedDomains.length > 0) {
+    const patterns = blockedDomains.map(domain => `*://${domain}/*`);
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.url) {
+          for (const domain of blockedDomains) {
+            if (tab.url.includes(domain)) {
+              chrome.tabs.reload(tab.id);
+              break;
+            }
+          }
+        }
+      });
+    });
+  }
+
   return { sessionEnd };
 };
 
 const endSession = async () => {
+  // Get the blocked domains before clearing
+  const { blockedDomains } = await getState();
   await chrome.storage.local.set({ [STORAGE_KEYS.sessionEnd]: null });
   await clearRules();
   await scheduleAlarm(null);
+
+  // Reload all open tabs that match previously blocked domains
+  if (Array.isArray(blockedDomains) && blockedDomains.length > 0) {
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.url) {
+          for (const domain of blockedDomains) {
+            if (tab.url.includes(domain)) {
+              chrome.tabs.reload(tab.id);
+              break;
+            }
+          }
+        }
+      });
+    });
+  }
 };
 
 const extendSession = async (additionalMinutes) => {
